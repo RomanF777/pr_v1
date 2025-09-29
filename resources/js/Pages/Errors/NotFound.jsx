@@ -1,5 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import Footer from '@/Components/Footer';
+import FAQ from '@/Components/FAQ';
 
 export default function NotFound() {
     return (
@@ -97,7 +98,7 @@ export default function NotFound() {
                 </div>
             </div>
         </div>
-        <span className="block bg-black h-20"></span>
+        <FAQ />
         <Footer />
         </>
     );
