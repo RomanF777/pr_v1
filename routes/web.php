@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\StripeController;
 
 // Главная страница
 Route::get('/', function () {
@@ -83,6 +84,10 @@ Route::fallback(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/create-payment-intent', [StripeController::class, 'createPaymentIntent']);
 });
 
 require __DIR__.'/auth.php';

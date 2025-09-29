@@ -1,12 +1,16 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
+import { useState } from 'react';
+import StripePayment from '@/Components/StripePayment';
 
 export default function Dashboard() {
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    
     const product = {
         name: "StudyPro AI Assistant",
         description: "Мощный ИИ-помощник для учебы, который работает незаметно в фоне",
-        price: "2990",
-        originalPrice: "4990",
+        price: 2990,          // в центах евро (29.90 €)
+        originalPrice: 4990,   // в центах евро (49.90 €)
         discount: "40%",
         features: [
             "Выделяйте любой текст и получайте мгновенные объяснения",
@@ -26,29 +30,27 @@ export default function Dashboard() {
         ]
     };
 
-    const handlePurchase = () => {
-        // Временная заглушка для демонстрации
-        alert('Инициирована покупка StudyPro AI Assistant. В реальном приложении здесь будет интеграция с платежной системой.');
-        console.log('Покупка программы:', product.name);
-    };
-
+    const handlePurchase = () => setShowPaymentModal(true);
     const handleDemo = () => {
         alert('Демо-версия будет доступна после покупки. В реальном приложении здесь будет ссылка на демо.');
     };
 
     return (
         <AuthenticatedLayout
-            header={
-                <h2 className="text-2xl font-bold text-blue-900">
-                    StudyPro AI Assistant
-                </h2>
-            }
+            header={<h2 className="text-2xl font-bold text-blue-900">StudyPro AI Assistant</h2>}
         >
             <Head title="Купить программу - StudyPro" />
 
+            {/* Модальное окно оплаты */}
+            <StripePayment
+                amount={product.price}        // в центах евро
+                product={product}
+                isOpen={showPaymentModal}
+                onClose={() => setShowPaymentModal(false)}
+            />
+
             <div className="py-8">
                 <div className="mx-auto max-w-6xl">
-                    {/* Основной блок с продуктом */}
                     <div className="grid lg:grid-cols-2 gap-12 mb-16">
                         {/* Левая колонка - описание */}
                         <div>
@@ -61,7 +63,7 @@ export default function Dashboard() {
                                     </div>
                                     <h1 className="text-3xl font-bold text-blue-900">{product.name}</h1>
                                 </div>
-                                
+
                                 <p className="text-blue-700 text-lg mb-6 leading-relaxed">
                                     {product.description}
                                 </p>
@@ -69,8 +71,12 @@ export default function Dashboard() {
                                 {/* Цена */}
                                 <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 mb-6">
                                     <div className="flex items-end gap-4 mb-2">
-                                        <div className="text-4xl font-bold text-blue-900">{product.price} ₽</div>
-                                        <div className="text-lg text-gray-500 line-through">{product.originalPrice} ₽</div>
+                                        <div className="text-4xl font-bold text-blue-900">
+                                            {(product.price / 100).toFixed(2)} €
+                                        </div>
+                                        <div className="text-lg text-gray-500 line-through">
+                                            {(product.originalPrice / 100).toFixed(2)} €
+                                        </div>
                                         <div className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
                                             -{product.discount}
                                         </div>
@@ -89,7 +95,7 @@ export default function Dashboard() {
                                         </svg>
                                         Купить и скачать сейчас
                                     </button>
-                                    
+
                                     <button
                                         onClick={handleDemo}
                                         className="w-full border-2 border-blue-600 text-blue-600 hover:bg-blue-50 py-3 px-6 rounded-xl font-bold transition duration-200"
@@ -100,7 +106,7 @@ export default function Dashboard() {
                             </div>
                         </div>
 
-                        {/* Правая колонка - особенности */}
+                        {/* Правая колонка – особенности */}
                         <div className="space-y-6">
                             {/* Основные возможности */}
                             <div className="bg-white rounded-2xl shadow-lg p-6 border border-blue-100">
@@ -111,8 +117,8 @@ export default function Dashboard() {
                                     Основные возможности
                                 </h3>
                                 <ul className="space-y-3">
-                                    {product.features.map((feature, index) => (
-                                        <li key={index} className="flex items-start gap-3">
+                                    {product.features.map((feature, i) => (
+                                        <li key={i} className="flex items-start gap-3">
                                             <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                             </svg>
@@ -131,8 +137,8 @@ export default function Dashboard() {
                                     Системные требования
                                 </h3>
                                 <ul className="space-y-2">
-                                    {product.systemRequirements.map((req, index) => (
-                                        <li key={index} className="flex items-center gap-3 text-blue-700">
+                                    {product.systemRequirements.map((req, i) => (
+                                        <li key={i} className="flex items-center gap-3 text-blue-700">
                                             <svg className="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                             </svg>
@@ -204,6 +210,87 @@ export default function Dashboard() {
                         <div className="bg-white rounded-xl p-6 text-center border border-blue-100">
                             <div className="text-blue-600 font-bold text-lg mb-2">🔒 Гарантия возврата</div>
                             <div className="text-blue-700 text-sm">30 дней на возврат средств если не подойдет</div>
+                        </div>
+                    </div>
+
+                    {/* Отзывы (дополнительный блок) */}
+                    <div className="mt-16 bg-white rounded-2xl shadow-lg p-8 border border-blue-100">
+                        <h3 className="text-2xl font-bold text-blue-900 text-center mb-8">
+                            Что говорят наши пользователи
+                        </h3>
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="bg-blue-50 rounded-xl p-6">
+                                <div className="flex items-center mb-4">
+                                    <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                                        А
+                                    </div>
+                                    <div>
+                                        <div className="font-bold text-blue-900">Анна</div>
+                                        <div className="text-yellow-500">★★★★★</div>
+                                    </div>
+                                </div>
+                                <p className="text-blue-700 text-sm">
+                                    "Экономит мне 2-3 часа каждый день! Тесты решаются моментально, а объяснения очень понятные."
+                                </p>
+                            </div>
+                            
+                            <div className="bg-blue-50 rounded-xl p-6">
+                                <div className="flex items-center mb-4">
+                                    <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                                        М
+                                    </div>
+                                    <div>
+                                        <div className="font-bold text-blue-900">Максим</div>
+                                        <div className="text-yellow-500">★★★★★</div>
+                                    </div>
+                                </div>
+                                <p className="text-blue-700 text-sm">
+                                    "Работает действительно незаметно. Учителя даже не подозревают, что у меня такая помощь."
+                                </p>
+                            </div>
+                            
+                            <div className="bg-blue-50 rounded-xl p-6">
+                                <div className="flex items-center mb-4">
+                                    <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                                        К
+                                    </div>
+                                    <div>
+                                        <div className="font-bold text-blue-900">Кирилл</div>
+                                        <div className="text-yellow-500">★★★★★</div>
+                                    </div>
+                                </div>
+                                <p className="text-blue-700 text-sm">
+                                    "Лучшее вложение в учебу! За месяц использования средний балл вырос с 3.8 до 4.5."
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* FAQ */}
+                    <div className="mt-16 bg-white rounded-2xl shadow-lg p-8 border border-blue-100">
+                        <h3 className="text-2xl font-bold text-blue-900 text-center mb-8">
+                            Часто задаваемые вопросы
+                        </h3>
+                        <div className="space-y-6 max-w-4xl mx-auto">
+                            <div className="border-b border-blue-100 pb-4">
+                                <h4 className="font-bold text-blue-800 mb-2">Как быстро я получу программу после оплаты?</h4>
+                                <p className="text-blue-700 text-sm">Ссылка для скачивания приходит моментально после успешной оплаты на вашу почту и становится доступна в личном кабинете.</p>
+                            </div>
+                            
+                            <div className="border-b border-blue-100 pb-4">
+                                <h4 className="font-bold text-blue-800 mb-2">Нужен ли интернет для работы программы?</h4>
+                                <p className="text-blue-700 text-sm">Интернет нужен только для первоначальной активации. После активации программа работает полностью оффлайн.</p>
+                            </div>
+                            
+                            <div className="border-b border-blue-100 pb-4">
+                                <h4 className="font-bold text-blue-800 mb-2">Что если программа не подойдет?</h4>
+                                <p className="text-blue-700 text-sm">Мы даем 30 дней на возврат средств. Если программа не заработает на вашем компьютере или не оправдает ожиданий - вернем деньги.</p>
+                            </div>
+                            
+                            <div>
+                                <h4 className="font-bold text-blue-800 mb-2">Будут ли обновления?</h4>
+                                <p className="text-blue-700 text-sm">Да, все обновления бесплатны для владельцев лицензии. Мы постоянно улучшаем программу и добавляем новые функции.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
