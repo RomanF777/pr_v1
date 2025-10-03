@@ -130,24 +130,6 @@ export default function Welcome({ auth }) {
                     </div>
                 </section>
 
-                {/* Subjects Section */}
-                <section className="py-16 bg-blue-50">
-                    <div className="container mx-auto px-6">
-                        <h2 className="text-4xl font-bold text-center text-blue-900 mb-16">
-                            Все школьные предметы в одном месте
-                        </h2>
-                        
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-                            {['Математика', 'Физика', 'Химия', 'Биология', 'История', 'География', 'Литература', 'Английский'].map((subject, index) => (
-                                <div key={index} className="bg-white rounded-xl p-6 text-center shadow-md hover:shadow-lg transition duration-200">
-                                    <div className="text-2xl font-bold text-blue-600 mb-2">{subject}</div>
-                                    <div className="text-blue-700 text-sm">от 5 до 11 класс</div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
                 {/* CTA Section */}
                 <CTASection />
                 {/* Customer Reviews Section */}

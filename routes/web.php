@@ -10,6 +10,12 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StripeController;
+use App\Http\Controllers\DownloadController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\WebhookController;
+use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\GoogleAuthController;
 
 // Главная страница
 Route::get('/', function () {
@@ -88,6 +94,23 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::post('/create-payment-intent', [StripeController::class, 'createPaymentIntent']);
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/create-payment-intent', [StripeController::class, 'createPaymentIntent']);
+    Route::get('/download', [DownloadController::class, 'download'])->name('download');
+    Route::get('/api/license', [DownloadController::class, 'getLicense']);
+});
+
+// Вебхук для Stripe (без CSRF защиты)
+Route::post('/stripe/webhook', [StripeController::class, 'handleWebhook']);
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::get('/subscriptions', [AdminController::class, 'subscriptions'])->name('admin.subscriptions');
+    Route::post('/users/{user}/subscription', [AdminController::class, 'updateSubscription'])->name('admin.users.subscription');
+    Route::post('/users/{user}/license', [AdminController::class, 'generateLicenseKey'])->name('admin.users.license');
 });
 
 require __DIR__.'/auth.php';
